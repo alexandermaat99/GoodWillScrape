@@ -60,10 +60,10 @@ for product in products:
 # Convert the list to a pandas DataFrame
 df = pd.DataFrame(product_data)
 
-
-
 # Save the DataFrame to a CSV file
 df.to_csv('goodwill_products.csv', index=False)
 
-print("Data has been saved to goodwill_products.csv")
+# Save the DataFrame to a JSON file
+df.to_json('goodwill_products.json')
+print("Data has been saved to goodwill_products.csv and goodwill_products.json.")
 
