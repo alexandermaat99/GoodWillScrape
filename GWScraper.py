@@ -2,13 +2,18 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
+#what the user is searching for
 searchFor = input("What would you like to search for? ")
 
+#how many resposnes the user wants to see  
 numOfResponses = input("How many responses would you like to see? ")
 # numOfResponses = 100
 
+#convert the number of responses to a string
 responses = str(numOfResponses)
 
+
+#ask the user if they would like to sort by price
 sort = input("Would you like to sort by price? (y/n) ").lower()
 if sort == "y":
     sort = "&srule=price-low-to-high"
@@ -18,6 +23,7 @@ else:
     print("Invalid input. No sorting will be done.")
     sort = ""
 
+#url to scrape
 url = "https://www.goodwillfinds.com/search/?q=" + searchFor + "&sz="+ responses + "&start=0" + sort
 response = requests.get(url)
 
@@ -57,13 +63,16 @@ for product in products:
     # Append the product data to the list
     product_data.append({"Title": title, "Price": price, "Sale": sale, "URL": url})
 
+
 # Convert the list to a pandas DataFrame
 df = pd.DataFrame(product_data)
+today_date = pd.Timestamp.now().strftime("%m-%d-%Y")
 
 # Save the DataFrame to a CSV file
-df.to_csv('goodwill_products.csv', index=False)
+df.to_csv(f"{searchFor}_{today_date}_{numOfResponses}.csv", index=False)
+
 
 # Save the DataFrame to a JSON file
-df.to_json('goodwill_products.json')
+# df.to_json('{today_date} + {searchFor} + {numOfResponses} + '_goodwill_products.json'', orient='records')
 print("Data has been saved to goodwill_products.csv and goodwill_products.json.")
 
