@@ -11,7 +11,7 @@ import os
 #what the user is searching for
 # searchFor = input("What would you like to search for? ")
 
-searching_list = ["mamiya 7", "contax", "mamiya", "nikon l35"]
+searching_list = ["contax", "mamiya", "nikon l35"]
 
 #how many resposnes the user wants to see  
 num_responses = 100
@@ -71,7 +71,7 @@ df = pd.DataFrame(all_data)
 today_date = pd.Timestamp.now().strftime("%m-%d-%Y")
 
 # Save the DataFrame to a CSV file
-df.to_csv(f"{searchFor}_{today_date}_{num_responses}.csv", index=False)
+df.to_csv(f"dailyScrape.csv", index=False)
 
 
 # Save the DataFrame to a JSON file
@@ -81,12 +81,14 @@ print("Data has been saved to goodwill_products.csv and goodwill_products.json."
 
 
 def send_email(file_path):
+    # Correctly read the password from the 'password.txt' file
+    with open('idk.txt', 'r') as file:
+        password = file.read().strip()
+
     from_email = "aamaat99@gmail.com"
     to_email = "aamaat99@gmail.com"
     subject = "Daily Goodwill Scrape"
     body = "Here is the daily scrape of Goodwill products."
-    password = "your_email_password"
-
 
     # Create a multipart message
     msg = MIMEMultipart()
@@ -96,12 +98,12 @@ def send_email(file_path):
     msg.attach(MIMEText(body, 'plain'))
 
     # Attach the file
-    attachment = open(file_path, "rb")
-    part = MIMEBase('application', 'octet-stream')
-    part.set_payload(attachment.read())
-    encoders.encode_base64(part)
-    part.add_header('Content-Disposition', f"attachment; filename= {os.path.basename(file_path)}")
-    msg.attach(part)
+    with open(file_path, "rb") as attachment:
+        part = MIMEBase('application', 'octet-stream')
+        part.set_payload(attachment.read())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition', f"attachment; filename={os.path.basename(file_path)}")
+        msg.attach(part)
 
     # Connect to the server and send the email
     server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -111,5 +113,5 @@ def send_email(file_path):
     server.sendmail(from_email, to_email, text)
     server.quit()
 
-send_email(csv_file_path)
-print(f"Data has been saved to {csv_file_path} and emailed.")
+send_email('dailyScrape.csv')
+print(f"Data has been saved to {'dailyScrape.csv'} and emailed.")
